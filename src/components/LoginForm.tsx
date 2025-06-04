@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserIcon, GraduationCapIcon } from "lucide-react";
+import { UserIcon, GraduationCapIcon, Eye, EyeOff, Lock } from "lucide-react";
 
 interface LoginFormProps {
   onLogin: (userType: 'student' | 'teacher', username: string) => void;
@@ -12,17 +12,22 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [studentUsername, setStudentUsername] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
   const [teacherUsername, setTeacherUsername] = useState('');
+  const [teacherPassword, setTeacherPassword] = useState('');
+  const [showStudentPassword, setShowStudentPassword] = useState(false);
+  const [showTeacherPassword, setShowTeacherPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (userType: 'student' | 'teacher') => {
     setIsLoading(true);
     const username = userType === 'student' ? studentUsername : teacherUsername;
+    const password = userType === 'student' ? studentPassword : teacherPassword;
     
     // Simulate loading animation
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    if (username.trim()) {
+    if (username.trim() && password.trim()) {
       onLogin(userType, username);
     }
     setIsLoading(false);
@@ -83,9 +88,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                   className="border-gray-300 focus:border-blue-400 transition-colors"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Password</label>
+                <div className="relative">
+                  <Input
+                    type={showStudentPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={studentPassword}
+                    onChange={(e) => setStudentPassword(e.target.value)}
+                    className="border-gray-300 focus:border-blue-400 transition-colors pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowStudentPassword(!showStudentPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showStudentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
               <Button
                 onClick={() => handleLogin('student')}
-                disabled={isLoading || !studentUsername.trim()}
+                disabled={isLoading || !studentUsername.trim() || !studentPassword.trim()}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300"
               >
                 {isLoading ? (
@@ -94,7 +118,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                     Connecting...
                   </div>
                 ) : (
-                  'Start Your Journey'
+                  <div className="flex items-center gap-2">
+                    <Lock size={16} />
+                    Start Your Journey
+                  </div>
                 )}
               </Button>
             </TabsContent>
@@ -110,9 +137,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                   className="border-gray-300 focus:border-green-400 transition-colors"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Password</label>
+                <div className="relative">
+                  <Input
+                    type={showTeacherPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={teacherPassword}
+                    onChange={(e) => setTeacherPassword(e.target.value)}
+                    className="border-gray-300 focus:border-green-400 transition-colors pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowTeacherPassword(!showTeacherPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showTeacherPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
               <Button
                 onClick={() => handleLogin('teacher')}
-                disabled={isLoading || !teacherUsername.trim()}
+                disabled={isLoading || !teacherUsername.trim() || !teacherPassword.trim()}
                 className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 transition-all duration-300"
               >
                 {isLoading ? (
@@ -121,7 +167,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                     Accessing Dashboard...
                   </div>
                 ) : (
-                  'Access Dashboard'
+                  <div className="flex items-center gap-2">
+                    <Lock size={16} />
+                    Access Dashboard
+                  </div>
                 )}
               </Button>
             </TabsContent>
